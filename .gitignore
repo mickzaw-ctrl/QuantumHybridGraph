@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Generated project artifacts
+quantum_hybrid_graph.html
+quantum_kernel_graph.html
+quantum_hybrid_graph_dashboard.html
+nre_security_dashboard.html
+nre_incident_log.json
+routing_policy.txt
+routing_policy.json
+max_clique_qubo.json
+kernel_checkpoint.json
+graph_analysis_report.json
+quantum_experiments.json
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+real_world_benchmarks.json
+real_world_benchmarks.md
