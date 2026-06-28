@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantumHybridGraph — SHZ Quantum</title>
+<style>
+  :root {
+    --bg: #050a14;
+    --surface: #0a1628;
+    --surface2: #0f1f3a;
+    --border: #1a3a6a;
+    --primary: #00d4ff;
+    --primary2: #7b2fff;
+    --green: #00ff88;
+    --red: #ff4060;
+    --text: #e0eeff;
+    --muted: #6a8aaa;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); overflow-x: hidden; }
+
+  /* ── PARTICLE CANVAS ── */
+  #bg-canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.35; }
+
+  /* ── LAYOUT ── */
+  .wrap { position: relative; z-index:1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(5,10,20,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+  }
+  .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 2px; color: var(--primary); }
+  .nav-logo span { color: var(--primary2); }
+  .nav-links { display:flex; gap:28px; }
+  .nav-links a { color: var(--muted); text-decoration:none; font-size:.85rem; letter-spacing:1px; transition:.2s; }
+  .nav-links a:hover { color: var(--primary); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 120px 24px 80px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 99px; padding: 6px 18px; font-size:.75rem;
+    color: var(--primary); letter-spacing:2px; margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+  .hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+  
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 800; line-height: 1.1;
+    letter-spacing: -2px; margin-bottom: 24px;
+  }
+  h1 .q { color: var(--primary); }
+  h1 .h { color: var(--primary2); }
+  h1 .g { 
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--muted); max-width: 620px;
+    line-height: 1.7; margin-bottom: 48px;
+  }
+  .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+  .btn {
+    padding: 14px 32px; border-radius: 8px; font-size:.9rem;
+    font-weight:600; text-decoration:none; letter-spacing:.5px; transition:.2s;
+    display: inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    color: #fff; border: none;
+  }
+  .btn-primary:hover { opacity:.85; transform:translateY(-2px); }
+  .btn-outline {
+    border: 1px solid var(--border); color: var(--text); background:transparent;
+  }
+  .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+    gap: 16px; margin: 80px 0;
+  }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 20px; text-align:center;
+    transition: .2s; position:relative; overflow:hidden;
+  }
+  .stat-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--primary), var(--primary2));
+  }
+  .stat-card:hover { border-color:var(--primary); transform:translateY(-3px); }
+  .stat-num { font-size:2rem; font-weight:800; color:var(--primary); letter-spacing:-1px; }
+  .stat-label { font-size:.75rem; color:var(--muted); margin-top:4px; letter-spacing:1px; text-transform:uppercase; }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 0; }
+  .section-title {
+    font-size: 1.8rem; font-weight:700; letter-spacing:-1px;
+    margin-bottom: 12px;
+  }
+  .section-sub { color:var(--muted); margin-bottom:48px; font-size:.95rem; line-height:1.6; }
+  .accent { color: var(--primary); }
+
+  /* ── FEATURES GRID ── */
+  .features { display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+  .feat-card {
+    background: var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:28px; transition:.2s;
+  }
+  .feat-card:hover { border-color:var(--primary2); transform:translateY(-2px); }
+  .feat-icon { font-size:2rem; margin-bottom:16px; }
+  .feat-title { font-size:1rem; font-weight:700; margin-bottom:8px; }
+  .feat-desc { color:var(--muted); font-size:.875rem; line-height:1.6; }
+
+  /* ── QPU RESULTS ── */
+  .qpu-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:640px){ .qpu-grid{grid-template-columns:1fr;} }
+  .qpu-card {
+    background: var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:28px;
+  }
+  .qpu-card h3 { font-size:1rem; color:var(--primary); margin-bottom:16px; letter-spacing:1px; }
+  .qpu-row { display:flex; justify-content:space-between; align-items:center;
+    padding:8px 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+  .qpu-row:last-child { border-bottom:none; }
+  .qpu-row .key { color:var(--muted); }
+  .qpu-row .val { font-weight:600; font-family:monospace; }
+  .tag-green { color:var(--green); }
+  .tag-red   { color:var(--red); }
+  .tag-blue  { color:var(--primary); }
+
+  /* ── SIGNAL BAR ── */
+  .signal-section { margin-top:24px; }
+  .signal-row { display:flex; align-items:center; gap:12px; margin:8px 0; font-size:.8rem; }
+  .signal-label { width:140px; color:var(--muted); flex-shrink:0; }
+  .signal-bar-wrap { flex:1; background:rgba(255,255,255,0.05); border-radius:4px; height:8px; }
+  .signal-bar { height:8px; border-radius:4px; }
+  .signal-val { width:40px; text-align:right; font-family:monospace; }
+
+  /* ── ENTROPY VIZ ── */
+  .entropy-ring { display:flex; align-items:center; gap:32px; margin-top:24px; }
+  .ring-wrap { position:relative; width:120px; height:120px; flex-shrink:0; }
+  .ring-wrap svg { transform:rotate(-90deg); }
+  .ring-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    text-align:center; }
+  .ring-center .pct { font-size:1.4rem; font-weight:800; color:var(--primary); }
+  .ring-center .lbl { font-size:.65rem; color:var(--muted); }
+  .entropy-info p { font-size:.85rem; color:var(--muted); margin:6px 0; line-height:1.5; }
+  .entropy-info strong { color:var(--text); }
+
+  /* ── CODE ── */
+  pre {
+    background: var(--surface2); border:1px solid var(--border);
+    border-radius:10px; padding:24px; overflow-x:auto;
+    font-size:.82rem; line-height:1.7; color:#a8d8ff;
+  }
+  code { font-family: 'Cascadia Code','Fira Code',monospace; }
+
+  /* ── TIMELINE ── */
+  .timeline { border-left: 2px solid var(--border); padding-left:28px; }
+  .tl-item { position:relative; margin-bottom:32px; }
+  .tl-item::before {
+    content:''; position:absolute; left:-35px; top:4px;
+    width:12px; height:12px; border-radius:50%;
+    background: var(--primary); border:2px solid var(--bg);
+    box-shadow: 0 0 8px var(--primary);
+  }
+  .tl-date { font-size:.75rem; color:var(--primary); letter-spacing:1px; margin-bottom:6px; text-transform:uppercase; }
+  .tl-title { font-weight:700; margin-bottom:4px; }
+  .tl-desc { color:var(--muted); font-size:.85rem; line-height:1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top:1px solid var(--border); padding:40px 0;
+    text-align:center; color:var(--muted); font-size:.8rem;
+  }
+  footer a { color:var(--primary); text-decoration:none; }
+  .footer-logo { font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:12px; letter-spacing:2px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px) {
+    nav { padding:12px 16px; }
+    .nav-links { display:none; }
+    .hero { padding-top:90px; }
+  }
+
+  /* ── GLOW DIVIDER ── */
+  .glow-line {
+    height:1px;
+    background: linear-gradient(90deg, transparent, var(--primary), var(--primary2), transparent);
+    margin:0; opacity:.4;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SHZ <span>Quantum</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#qpu">QPU Results</a>
+    <a href="#quickstart">Quickstart</a>
+    <a href="#changelog">Changelog</a>
+    <a href="https://github.com/mickzaw-ctrl/QuantumHybridGraph" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-badge">⚛ Live QPU Tested — IBM Kingston 156q</div>
+    <h1>
+      <span class="q">Quantum</span><span class="h">Hybrid</span><br>
+      <span class="g">Graph</span>
+    </h1>
+    <p class="hero-sub">
+      Quantum-inspired hybrid evolutionary graph toolkit for network analysis,
+      accelerator detection and QAOA-style optimization — now with real IBM quantum hardware integration.
+    </p>
+    <div class="hero-buttons">
+      <a href="https://github.com/mickzaw-ctrl/QuantumHybridGraph" class="btn btn-primary" target="_blank">
+        ⚡ View on GitHub
+      </a>
+      <a href="#qpu" class="btn btn-outline">📊 QPU Benchmark Results</a>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- STATS -->
+<div class="wrap">
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Qubits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">262K</div>
+      <div class="stat-label">Hilbert Space</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">9.97</div>
+      <div class="stat-label">von Neumann Entropy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">156q</div>
+      <div class="stat-label">IBM Kingston QPU</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1010</div>
+      <div class="stat-label">Unique States</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">0.1</div>
+      <div class="stat-label">Plan v0.1.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-title">Core <span class="accent">Capabilities</span></div>
+    <p class="section-sub">A hybrid stack bridging quantum algorithms with classical graph theory</p>
+    <div class="features">
+      <div class="feat-card">
+        <div class="feat-icon">🔮</div>
+        <div class="feat-title">QAOA MaxClique</div>
+        <div class="feat-desc">Quantum Approximate Optimization Algorithm for clique detection — runs on local simulator or real IBM QPU via Qiskit Runtime.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🕸️</div>
+        <div class="feat-title">QPA Graph Growth</div>
+        <div class="feat-desc">Quantum Preferential Attachment for realistic scale-free network generation. Mirrors real-world topology evolution.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔍</div>
+        <div class="feat-title">Grover Clique Search</div>
+        <div class="feat-desc">Grover-style amplitude amplification simulation for accelerated clique discovery in dense graphs.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Accelerator Detection</div>
+        <div class="feat-desc">Identifies cliques, k-core components, modularity communities and hub ego-networks — combined into Intelligent Acceleration reports.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🛡️</div>
+        <div class="feat-title">Adaptive NRE</div>
+        <div class="feat-desc">Self-healing network agent with threat quarantine, recovery procedures, BGP/SDN routing policy integration and full checkpoint/restore.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Quantum Trading Pipeline</div>
+        <div class="feat-desc">18-qubit ZZFeatureMap encodes price momentum, sentiment, orderflow and volatility. Tested live on IBM Kingston 156-qubit QPU.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- QPU RESULTS -->
+<section id="qpu">
+  <div class="wrap">
+    <div class="section-title">Real <span class="accent">QPU Results</span></div>
+    <p class="section-sub">Executed on IBM Kingston (156 qubits, Eagle r3) — SHZ Quantum benchmark suite</p>
+
+    <div class="qpu-grid">
+      <!-- 18core results -->
+      <div class="qpu-card">
+        <h3>⚛ 18core ZZFeatureMap</h3>
+        <div class="qpu-row"><span class="key">Job ID</span><span class="val tag-blue">d90dp9emvj5c73ej2ubg</span></div>
+        <div class="qpu-row"><span class="key">Backend</span><span class="val">ibm_kingston 156q</span></div>
+        <div class="qpu-row"><span class="key">Qubits</span><span class="val tag-blue">18</span></div>
+        <div class="qpu-row"><span class="key">Gate depth</span><span class="val">59 → 200 transpiled</span></div>
+        <div class="qpu-row"><span class="key">Shots</span><span class="val">1,024</span></div>
+        <div class="qpu-row"><span class="key">Unique states</span><span class="val tag-blue">1,010 / 262,144</span></div>
+        <div class="qpu-row"><span class="key">Von Neumann S</span><span class="val tag-blue">9.972 / 18.0 bits</span></div>
+        <div class="qpu-row"><span class="key">Signal</span><span class="val tag-red">🔴 SELL (score -2)</span></div>
+        <div class="qpu-row"><span class="key">Status</span><span class="val tag-green">✅ Submitted</span></div>
+
+        <div class="signal-section">
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">Trading Feature Map</div>
+          <div class="signal-row">
+            <span class="signal-label">price_momentum</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:0%;background:var(--red)"></div></div>
+            <span class="signal-val tag-red">0.0</span>
+          </div>
+          <div class="signal-row">
+            <span class="signal-label">finbert_sentiment</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:14%;background:var(--red)"></div></div>
+            <span class="signal-val tag-red">0.14</span>
+          </div>
+          <div class="signal-row">
+            <span class="signal-label">orderflow</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:0%;background:var(--red)"></div></div>
+            <span class="signal-val tag-red">0.0</span>
+          </div>
+          <div class="signal-row">
+            <span class="signal-label">volatility_24h</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:0%;background:var(--red)"></div></div>
+            <span class="signal-val tag-red">0.0</span>
+          </div>
+          <div class="signal-row">
+            <span class="signal-label">news_impact</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:86%;background:var(--green)"></div></div>
+            <span class="signal-val tag-green">0.86</span>
+          </div>
+          <div class="signal-row">
+            <span class="signal-label">emotional_signal</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:71%;background:var(--green)"></div></div>
+            <span class="signal-val tag-green">0.71</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spin(10) QAOA -->
+      <div class="qpu-card">
+        <h3>🌀 Spin(10) QAOA</h3>
+        <div class="qpu-row"><span class="key">Job ID</span><span class="val tag-blue">d90dkp0pknjs73a28he0</span></div>
+        <div class="qpu-row"><span class="key">Backend</span><span class="val">ibm_kingston 156q</span></div>
+        <div class="qpu-row"><span class="key">Qubits</span><span class="val tag-blue">12</span></div>
+        <div class="qpu-row"><span class="key">Immirzi γ</span><span class="val">0.2739</span></div>
+        <div class="qpu-row"><span class="key">Gate depth</span><span class="val">28 → 193 transpiled</span></div>
+        <div class="qpu-row"><span class="key">Shots</span><span class="val">1,024</span></div>
+        <div class="qpu-row"><span class="key">Unique states</span><span class="val tag-blue">810 / 4,096</span></div>
+        <div class="qpu-row"><span class="key">Top state</span><span class="val tag-green">|000…0⟩ vacuum ✅</span></div>
+        <div class="qpu-row"><span class="key">Runtime</span><span class="val tag-green">6.2s</span></div>
+        <div class="qpu-row"><span class="key">Status</span><span class="val tag-green">✅ DONE</span></div>
+
+        <div class="entropy-ring" style="margin-top:24px;">
+          <div class="ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,212,255,0.1)" stroke-width="12"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="12"
+                stroke-dasharray="314" stroke-dashoffset="141" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00d4ff"/>
+                  <stop offset="100%" stop-color="#7b2fff"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-center"><div class="pct">55%</div><div class="lbl">decoh.</div></div>
+          </div>
+          <div class="entropy-info">
+            <p><strong>Sector mapping:</strong></p>
+            <p>fermion gen → <code>|000⟩</code></p>
+            <p>gauge bosons → <code>|0000⟩</code></p>
+            <p>higgs sector → <code>|000⟩</code></p>
+            <p>gravity sector → <code>|00⟩</code></p>
+            <p style="margin-top:8px;color:var(--green);">GUT vacuum confirmed ✅</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:20px;font-size:.8rem;color:var(--muted);">
+      📄 Full data: 
+      <a href="benchmarks/18core_qpu_results.md" style="color:var(--primary);">benchmarks/18core_qpu_results.md</a> · 
+      <a href="benchmarks/18core_qpu_results.json" style="color:var(--primary);">benchmarks/18core_qpu_results.json</a> · 
+      <a href="https://github.com/mickzaw-ctrl/spin10-toe/releases/tag/v18core-qpu-test-1" style="color:var(--primary);" target="_blank">Release v18core-qpu-test-1 ↗</a>
+    </p>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- QUICKSTART -->
+<section id="quickstart">
+  <div class="wrap">
+    <div class="section-title">Quick<span class="accent">start</span></div>
+    <p class="section-sub">Up and running in 60 seconds</p>
+    <pre><code>git clone https://github.com/mickzaw-ctrl/QuantumHybridGraph.git
+cd QuantumHybridGraph
+pip install -e .
+
+# Basic usage
+python -c "
+from quantum_hybrid_graph import QuantumHybridGraph
+kernel = QuantumHybridGraph(initial_nodes=10, clique_threshold=3, seed=42)
+for _ in range(10):
+    kernel.run_cycle()
+print(kernel.summary())
+"
+
+# QAOA MaxClique on local simulator
+pip install -e .[quantum]
+python -c "
+from quantum_hybrid_graph import QuantumHybridGraph
+kernel = QuantumHybridGraph(initial_nodes=12, seed=0)
+for _ in range(15): kernel.run_cycle()
+result = kernel.qaoa_maxclique(reps=2, optimizer='COBYLA', shots=1024)
+print(result)
+"</code></pre>
+  </div>
+</section>
+
+<!-- CHANGELOG -->
+<section id="changelog">
+  <div class="wrap">
+    <div class="section-title">Change<span class="accent">log</span></div>
+    <p class="section-sub">Release history</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">2026-06-28</div>
+        <div class="tl-title">IBM Kingston QPU Benchmark</div>
+        <div class="tl-desc">First real quantum hardware test: 18-qubit ZZFeatureMap and Spin(10) QAOA (12q, γ=0.2739) executed on ibm_kingston 156-qubit QPU. Von Neumann entropy 9.97 bits, 1010 unique states sampled.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026-06-27 — v0.1.0</div>
+        <div class="tl-title">Initial GitHub Release</div>
+        <div class="tl-desc">Checkpoint/restore of full kernel state. Recovery Procedures with self-healing back into production. AdaptiveNRE agent with BGP/SDN routing policy integration. QUBO export for MaxClique.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-logo">SHZ Quantum</div>
+    <p>
+      <a href="https://github.com/mickzaw-ctrl/QuantumHybridGraph" target="_blank">GitHub</a> ·
+      <a href="https://github.com/mickzaw-ctrl/SHZ-Core-Framework" target="_blank">SHZ-Core-Framework</a> ·
+      <a href="https://github.com/mickzaw-ctrl/spin10-toe" target="_blank">Spin(10) ToE</a> ·
+      <a href="https://github.com/mickzaw-ctrl/SHZSpin10-Quantum-Engine" target="_blank">SHZSpin10 Engine</a>
+    </p>
+    <p style="margin-top:12px;">Built with ⚛ by Emilka — SHZ Quantum AI</p>
+  </div>
+</footer>
+
+<script>
+// ── PARTICLE NETWORK ──────────────────────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize(); window.addEventListener('resize', resize);
+
+class Node {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*W; this.y = Math.random()*H;
+    this.vx = (Math.random()-.5)*.4; this.vy = (Math.random()-.5)*.4;
+    this.r = Math.random()*2+1;
+    this.color = Math.random()>.5 ? '#00d4ff' : '#7b2fff';
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+  }
+  draw() {
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle = this.color; ctx.fill();
+  }
+}
+
+for(let i=0;i<80;i++) nodes.push(new Node());
+
+function drawEdges() {
+  for(let i=0;i<nodes.length;i++) {
+    for(let j=i+1;j<nodes.length;j++) {
+      const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x,nodes[i].y);
+        ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.strokeStyle=`rgba(0,212,255,${(1-d/120)*.3})`;
+        ctx.lineWidth=.5; ctx.stroke();
+      }
+    }
+  }
+}
+
+function frame() {
+  ctx.clearRect(0,0,W,H);
+  nodes.forEach(n=>{n.update();n.draw();});
+  drawEdges();
+  requestAnimationFrame(frame);
+}
+frame();
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
