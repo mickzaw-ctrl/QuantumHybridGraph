@@ -1,0 +1,153 @@
+{
+  "title": "SHZ 18core \u00d7 IBM Kingston QPU \u2014 Test Results",
+  "timestamp": "2026-06-28T08:41:14Z",
+  "qpu_job_id": "d90dp9emvj5c73ej2ubg",
+  "status": "QPU job submitted \u2014 awaiting result (QUEUED on ibm_kingston)",
+  "simulator_results": {
+    "mode": "AerSimulator statevector",
+    "num_qubits": 18,
+    "hilbert_space": 262144,
+    "shots": 1024,
+    "unique_states": 1010,
+    "top_state": "000001000000110101",
+    "von_neumann_entropy_bits": 9.972,
+    "decoherence_pct": 55.4,
+    "composite_trading_signal": "SELL",
+    "signal_score": -2,
+    "trading_features": {
+      "price_momentum": {
+        "bits": "000",
+        "norm": 0.0,
+        "signal": "SHORT"
+      },
+      "finbert_sentiment": {
+        "bits": "001",
+        "norm": 0.143,
+        "signal": "SHORT"
+      },
+      "orderflow": {
+        "bits": "000",
+        "norm": 0.0,
+        "signal": "SHORT"
+      },
+      "volatility_24h": {
+        "bits": "000",
+        "norm": 0.0,
+        "signal": "SHORT"
+      },
+      "news_impact": {
+        "bits": "110",
+        "norm": 0.857,
+        "signal": "LONG"
+      },
+      "emotional_signal": {
+        "bits": "101",
+        "norm": 0.714,
+        "signal": "LONG"
+      }
+    }
+  },
+  "spin10_qpu_results": {
+    "mode": "ibm_kingston_QPU_REAL",
+    "job_id": "d90dkp0pknjs73a28he0",
+    "timestamp": "2026-06-28T08:25:14Z",
+    "top_state": "000000000000",
+    "top_prob": 0.007812,
+    "unique_states": 810,
+    "counts": {
+      "000000000000": 8,
+      "000001111000": 5,
+      "000000100000": 5,
+      "111100000000": 5,
+      "011111111100": 5,
+      "000000000010": 4,
+      "011111100000": 4,
+      "100111100000": 4,
+      "001000000000": 4,
+      "010000000000": 4,
+      "001100001000": 4,
+      "111111111110": 4,
+      "111100000111": 4,
+      "110111111111": 3,
+      "100000001110": 3,
+      "111111010000": 3,
+      "000000101000": 3,
+      "111101111111": 3,
+      "100101111100": 3,
+      "011111111010": 3,
+      "011111111000": 3,
+      "010000001000": 3,
+      "011110101000": 3,
+      "011111101110": 3,
+      "100000000000": 3,
+      "000001101000": 3,
+      "001101000010": 3,
+      "100000001000": 3,
+      "111111111111": 3,
+      "000000001100": 3,
+      "110000001111": 3,
+      "000000001101": 3,
+      "001111111000": 3,
+      "001111110000": 3,
+      "111110111111": 3,
+      "011111101001": 3,
+      "110100100000": 3,
+      "111110000100": 2,
+      "001111111001": 2,
+      "000110000111": 2,
+      "000010000111": 2,
+      "011111010000": 2,
+      "101001011111": 2,
+      "000001100000": 2,
+      "111100011100": 2,
+      "011110111110": 2,
+      "110111111010": 2,
+      "000001110010": 2,
+      "000111111110": 2,
+      "100101111000": 2
+    }
+  },
+  "circuit": {
+    "architecture": "ZZFeatureMap + Rx/Ry mixer",
+    "depth": 59,
+    "transpiled_depth_kingston": 200,
+    "gates": {
+      "rz": 36,
+      "cx": 36,
+      "h": 18,
+      "rx": 18,
+      "ry": 18,
+      "measure": 18
+    },
+    "features_vector": [
+      0.42,
+      0.71,
+      -0.33,
+      0.88,
+      0.15,
+      0.63,
+      0.29,
+      -0.54,
+      0.77,
+      0.12,
+      0.95,
+      -0.21,
+      0.48,
+      0.36,
+      -0.67,
+      0.83,
+      0.11,
+      0.59
+    ]
+  },
+  "benchmark": {
+    "previous_js_benchmark": {
+      "qubitCount": 18,
+      "totalTimeMs": 1.036,
+      "finalEntropy": 100
+    },
+    "qiskit_aer_runtime_s": 0.071,
+    "qpu_backend": "ibm_kingston",
+    "qpu_qubits": 156
+  }
+}
