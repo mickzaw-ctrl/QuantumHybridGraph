@@ -1,18 +1,17 @@
 {
   "test": "18core_ibm_kingston_real",
+  "timestamp": "2026-06-29T01:46:15Z",
   "job_id": "d90dp9emvj5c73ej2ubg",
-  "timestamp": "2026-06-29T01:30:57Z",
   "backend": "ibm_kingston",
   "num_qubits": 18,
   "shots": 1024,
   "status": "DONE",
+  "execution_time_s": 120.5,
   "unique_states": 1023,
   "top_state": "100100101111010100",
-  "top_probability": 0.002,
   "von_neumann_entropy_bits": 9.998,
-  "max_entropy_bits": 18.0,
   "decoherence_pct": 55.5,
-  "signal": "BUY",
+  "composite_signal": "BUY",
   "signal_score": 4,
   "trading_features": {
     "price_momentum": {
