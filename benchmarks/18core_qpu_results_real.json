@@ -1,23 +1,47 @@
 {
-  "title": "SHZ 18core \u00d7 IBM Kingston QPU \u2014 REAL HARDWARE RESULTS",
-  "timestamp": "2026-06-29T00:46:03Z",
+  "title": "SHZ 18core \u00d7 IBM Kingston QPU \u2014 Real Hardware Results",
+  "timestamp": "2026-06-29T01:00:23Z",
   "qpu_job_id": "d90dp9emvj5c73ej2ubg",
   "status": "DONE",
   "backend": "ibm_kingston",
-  "backend_qubits": 156,
-  "qpu_results": {
-    "mode": "Real QPU (ibm_kingston 156q)",
-    "num_qubits": 18,
-    "hilbert_space": 262144,
-    "shots": 1024,
+  "num_qubits": 18,
+  "shots": 1024,
+  "real_hardware_results": {
     "unique_states": 1023,
     "top_state": "100100101111010100",
-    "top_count": 2,
+    "top_probability": 0.002,
     "von_neumann_entropy_bits": 9.998,
-    "entropy_ratio": 0.5554,
+    "max_entropy_bits": 18.0,
+    "entropy_utilization_pct": 55.54,
     "composite_trading_signal": "BUY",
     "signal_score": 4,
-    "all_counts": {
+    "trading_features": {
+      "price_momentum": {
+        "bits": "100",
+        "norm": 0.571
+      },
+      "finbert_sentiment": {
+        "bits": "100",
+        "norm": 0.571
+      },
+      "orderflow": {
+        "bits": "101",
+        "norm": 0.714
+      },
+      "volatility_24h": {
+        "bits": "111",
+        "norm": 1.0
+      },
+      "news_impact": {
+        "bits": "010",
+        "norm": 0.286
+      },
+      "emotional_signal": {
+        "bits": "100",
+        "norm": 0.571
+      }
+    },
+    "top_50_states": {
       "100100101111010100": 2,
       "100101111010000010": 1,
       "100000010101011001": 1,
@@ -68,51 +92,6 @@
       "100010111010011100": 1,
       "010001110110011101": 1,
       "010110000001010011": 1
-    }
-  },
-  "trading_features": {
-    "price_momentum": {
-      "bits": "100",
-      "norm": 0.571,
-      "signal": "LONG"
-    },
-    "finbert_sentiment": {
-      "bits": "100",
-      "norm": 0.571,
-      "signal": "LONG"
-    },
-    "orderflow": {
-      "bits": "101",
-      "norm": 0.714,
-      "signal": "LONG"
-    },
-    "volatility_24h": {
-      "bits": "111",
-      "norm": 1.0,
-      "signal": "LONG"
-    },
-    "news_impact": {
-      "bits": "010",
-      "norm": 0.286,
-      "signal": "SHORT"
-    },
-    "emotional_signal": {
-      "bits": "100",
-      "norm": 0.571,
-      "signal": "LONG"
-    }
-  },
-  "circuit": {
-    "architecture": "ZZFeatureMap + Rx/Ry mixer",
-    "original_depth": 59,
-    "transpiled_depth_kingston": 200,
-    "gates": {
-      "rz": 36,
-      "cx": 36,
-      "h": 18,
-      "rx": 18,
-      "ry": 18,
-      "measure": 18
     }
   }
 }
